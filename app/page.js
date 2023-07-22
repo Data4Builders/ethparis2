@@ -11,14 +11,27 @@ import { fetchQuicknodeData } from "../api/api";
 let airstackVariables = {owner:null};
 let nftCollectionData;
 let tagPlaintext = "";
+let storycounter = 0;
 
 export default function Home() {
   init('ee48db4ca302405691ee47714ed144f3'); 
 
-  const airstackQuery = `query combinedQuery($owner: Identity!) {
+  const airstackQuery = `query walletDataQuery($owner: Identity!) {
     Wallet(input: {identity: $owner, blockchain: ethereum}) {
-      poaps: Poaps(input: {filter: {owner: {_eq: $owner}}, blockchain: ALL}) {
-        Poap {
+      poaps {
+        id
+        chainId
+        blockchain
+        dappName
+        dappSlug
+        dappVersion
+        eventId
+        createdAtBlockTimestamp
+        createdAtBlockNumber
+        tokenId
+        tokenAddress
+        tokenUri
+        poapEvent {
           id
           chainId
           blockchain
@@ -26,90 +39,41 @@ export default function Home() {
           dappSlug
           dappVersion
           eventId
-          createdAtBlockTimestamp
-          createdAtBlockNumber
-          tokenId
-          tokenAddress
-          tokenUri
-          poapEvent {
-            id
-            chainId
-            blockchain
-            dappName
-            dappSlug
-            dappVersion
-            eventId
-            contentType
-            contentValue {
-              image {
-                original
-              }
+          contentType
+          contentValue {
+            image {
+              original
             }
-            eventName
-            description
-            country
-            city
-            startDate
-            endDate
-            isVirtualEvent
-            eventURL
           }
+          eventName
+          description
+          country
+          city
+          startDate
+          endDate
+          isVirtualEvent
+          eventURL
         }
       }
       tokenBalances {
-        erc20: TokenBalances(input: {filter: {owner: {_in: [$owner]}, tokenType: {_in: [ERC20]}}, limit: 200}) {
-          tokenNfts:TokenBalance {
-            id: tokenId
-            address: tokenAddress
-            tokenId
-            blockchain
-            chainId
-            type: tokenType
-            totalSupply: amount
-            tokenURI
-            contentType
-            contentValue {
-              image {
-                original
-              }
+        tokenNfts {
+          id
+          address
+          tokenId
+          blockchain
+          chainId
+          type
+          totalSupply
+          tokenURI
+          contentType
+          contentValue {
+            image {
+              original
             }
           }
-        }
-        erc721: TokenBalances(input: {filter: {owner: {_in: [$owner]}, tokenType: {_in: [ERC721]}, tokenAddress: {_nin: ["0x22C1f6050E56d2876009903609a2cC3fEf83B415"]}}, limit: 200}) {
-          tokenNfts:TokenBalance {
-            id: tokenId
-            address: tokenAddress
-            tokenId
-            blockchain
-            chainId
-            type: tokenType
-            totalSupply: amount
-            tokenURI
-            contentType
-            contentValue {
-              image {
-                original
-              }
-            }
-          }
-        }
-        poap: TokenBalances(input: {filter: {owner: {_in: [$owner]}, tokenAddress: {_eq: "0x22C1f6050E56d2876009903609a2cC3fEf83B415"}}, limit: 200}) {
-          tokenNfts:TokenBalance {
-            id: tokenId
-            address: tokenAddress
-            tokenId
-            blockchain
-            chainId
-            type: tokenType
-            totalSupply: amount
-            tokenURI
-            contentType
-            contentValue {
-              image {
-                original
-              }
-            }
-          }
+          lastTransferHash
+          lastTransferBlock
+          lastTransferTimestamp
         }
       }
     }
@@ -140,6 +104,7 @@ export default function Home() {
 
   
   const [airstackfetch, { data, loading, error }] = useLazyQuery(airstackQuery, airstackVariables);
+  console.log(error)
 
   async function getNftData(data) {
     return fetchQuicknodeData(data)
@@ -182,10 +147,7 @@ export default function Home() {
             data.Wallet.tokenBalances.forEach(balance => {
               if(balance.tokenNfts !== null) {
                   tagPlaintext += `
-                      Token ID: ${balance.tokenNfts.id}
-                      Address: ${balance.tokenNfts.address}
                       Blockchain: ${balance.tokenNfts.blockchain}
-                      Last Transfer Timestamp: ${balance.tokenNfts.lastTransferTimestamp}
                       `;
               }
             });
@@ -256,6 +218,7 @@ export default function Home() {
     );
     return feed;
   }
+  
 
   useEffect(() => {
     if (!tags) return;
@@ -267,9 +230,8 @@ export default function Home() {
       console.log(sortedItems)
 
       const filterStories = async () => {
-        let counter = 0;
         for (const story of sortedItems) {
-          if (counter >= 4) { // important line of code! number of relevant articles that are loaded
+          if (storycounter >= 4) { // important line of code! number of relevant articles that are loaded
             break;
           }
           const response = await fetch('/api/articleselector', {
@@ -285,7 +247,7 @@ export default function Home() {
             //console.log(shouldAddStory)
             if (shouldAddStory == '{"tags":"true"}') {
               setStories((prevStories) => [...prevStories, story]);  // Update the state immediately
-              counter += 1;
+              storycounter += 1;
             }
           } else {
             console.error('API response was not ok for story', story);
