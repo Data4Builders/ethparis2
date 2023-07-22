@@ -1,6 +1,4 @@
 "use client"
-import Image from 'next/image'
-import styles from './page.module.css'
 import { useState, useEffect } from 'react';
 import Story from '../components/Story'
 import Web3 from 'web3';
@@ -8,13 +6,13 @@ import { init, useLazyQuery } from "@airstack/airstack-react";
 const Parser = require("rss-parser");
 import { fetchQuicknodeData } from "../api/api";
 
-let airstackVariables = {owner:null};
+let airstackVariables = { owner: null };
 let nftCollectionData;
 let tagPlaintext = "";
 let storycounter = 0;
 
 export default function Home() {
-  init('ee48db4ca302405691ee47714ed144f3'); 
+  init('ee48db4ca302405691ee47714ed144f3');
 
   const airstackQuery = `query walletDataQuery($owner: Identity!) {
     Wallet(input: {identity: $owner, blockchain: ethereum}) {
@@ -78,7 +76,7 @@ export default function Home() {
       }
     }
   }`
-  
+
 
   const feedUrls = [
     "https://rss.app/feeds/EsnHA9U6TsdCtbfa.xml", //cointelegraph Bitcoin
@@ -102,7 +100,7 @@ export default function Home() {
   const [tags, setTags] = useState(null);
   const [tagsUpdate, setTagsUpdate] = useState(false);
 
-  
+
   const [airstackfetch, { data, loading, error }] = useLazyQuery(airstackQuery, airstackVariables);
   console.log(error)
 
@@ -124,17 +122,21 @@ export default function Home() {
         airstackfetch();
         console.log(data)
 
-        if(data) {
-            setTagsUpdate(false)
-            const nftCollectionData = await getNftData(data);
-        
-            tagPlaintext = ""
-            console.log("output from nft collection data")
-            console.log(nftCollectionData)
+        if (data) {
+          setTagsUpdate(false)
+          const nftCollectionData = await getNftData(data);
 
-            await new Promise(r => setTimeout(r, 3000))
-            data.Wallet.poaps.forEach(poap => {
-              tagPlaintext += `
+          tagPlaintext = ""
+          console.log("output from nft collection data")
+          console.log(nftCollectionData)
+
+          tagPlaintext = ""
+          console.log("output from nft collection data")
+          console.log(nftCollectionData)
+
+          await new Promise(r => setTimeout(r, 3000))
+          data.Wallet.poaps.forEach(poap => {
+            tagPlaintext += `
                   ID: ${poap.id}
                   Blockchain: ${poap.blockchain}
                   Event Description: ${poap.poapEvent.description}
@@ -142,15 +144,15 @@ export default function Home() {
                   Event City: ${poap.poapEvent.city}
                   Event URL: ${poap.poapEvent.eventURL}
                   `;
-            });
+          });
 
             data.Wallet.tokenBalances.forEach(balance => {
               if(balance.tokenNfts !== null) {
                   tagPlaintext += `
                       Blockchain: ${balance.tokenNfts.blockchain}
                       `;
-              }
-            });
+            }
+          });
 
             for(let key in nftCollectionData) {
               setquickNodeLoaded(true);
@@ -204,7 +206,7 @@ export default function Home() {
     }
   };
 
-  if(tagPlaintext.length > 0 && quickNodeLoaded && !loadingOpenAI && tagsUpdate) {
+  if (tagPlaintext.length > 0 && quickNodeLoaded && !loadingOpenAI && tagsUpdate) {
     console.log(getTags());
   }
 
