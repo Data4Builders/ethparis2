@@ -2,10 +2,15 @@
 import { useState, useEffect } from 'react';
 import { IoTrashSharp } from "react-icons/io5";
 import { useAccount } from 'wagmi'
+import {
+  SismoConnectButton,
+  AuthType,
+  SismoConnectResponse,
+  ClaimType,
+} from "@sismo-core/sismo-connect-react";
 const Parser = require("rss-parser");
 
 export default function Home() {
-
   const { address, isConnected } = useAccount()
 
   const [accounts, setAccounts] = useState({
@@ -14,26 +19,10 @@ export default function Home() {
     github: ['loading...'],
     worldcoin: ['loading...'],
     twitter: ['loading...'],
-    sismo: ['loading...'], // Add this line
+    sismo: ['loading...'],
   });
-  
 
   const [tags, setTags] = useState([]);
-  //   name: "USDD",
-  //   color: "red"
-  // }, {
-  //   name: "Huboi",
-  //   color: "blue"
-  // }, {
-  //   name: "Paris",
-  //   color: "green"
-  // }, {
-  //   name: "Soccer",
-  //   color: "purple"
-  // }, {
-  //   name: "Human",
-  //   color: "orange"
-  // }]);
 
   useEffect(() => {
     if (address) {
@@ -45,6 +34,14 @@ export default function Home() {
         })
     }
   }, [address])
+
+  const handleSismoResponse = async (response) => {
+    const res = await fetch("/api/verify", {
+      method: "POST",
+      body: JSON.stringify(response),
+    });
+    console.log(await res.json());
+  }
 
   return (
     <div className="bg-neutral-900 text-white">
@@ -75,6 +72,7 @@ export default function Home() {
           </section>
 
           <div className="flex flex-wrap justify mt-5">
+
             {/* ENS */}
             <section className="w-1/2">
               <div className="mt-3 display-font italic text-2xl">
@@ -115,33 +113,42 @@ export default function Home() {
                   </div>
                 )}
               </div>
-              
             </section>
           </div>
 
           {/* Sismo */}
-<section className="w-1/2">
-  <div className="mt-3 display-font italic text-2xl">
-    Sismo
-  </div>
-  <div>
-    {accounts.sismo ? (
-      <div>
-        <div className="flex items-center">
-          <div className="bg-neutral-700 mt-2 px-1">{accounts.sismo}</div>
-          <div className="pl-2 mt-2 hover:cursor-pointer"><IoTrashSharp className="" /></div>
-        </div>
-      </div>
-    ) : (
-      <div className="border px-2 w-min mt-3 hover:bg-white hover:text-black hover:cursor-pointer text-xs">
-        Connect
-      </div>
-    )}
-  </div>
-</section>
-
-          
-          
+          <section className="w-1/2">
+            <div className="mt-3 display-font italic text-2xl">
+              Sismo
+            </div>
+            <div>
+              {accounts.sismo ? (
+                <div>
+                  <div className="flex items-center">
+                    <div className="bg-neutral-700 mt-2 px-1">{accounts.sismo}</div>
+                    <div className="pl-2 mt-2 hover:cursor-pointer"><IoTrashSharp className="" /></div>
+                  </div>
+                </div>
+              ) : (
+                <SismoConnectButton
+                  config={{
+                    appId: "0xa860f5fd71c5cf5707d371f589083d5a", 
+                    vault: {
+                      impersonate: [
+                      ],
+                    },
+                  }}
+                  auths={[{ authType: AuthType.GITHUB }]}
+                  claims={[
+                    { groupId: "0x1cde61966decb8600dfd0749bd371f12" }, 
+                    { groupId: "0x1cde61966decb8600dfd0749bd371f12", value: 15, claimType: ClaimType.GTE }
+                  ]}
+                  signature={{ message: "Connect to Data4Builders" }}
+                  onResponse={handleSismoResponse}
+                />
+              )}
+            </div>
+          </section>
 
           <div className="flex flex-wrap justify mt-5">
             {/* GitHub */}
@@ -190,8 +197,6 @@ export default function Home() {
               <div className='bg-white text-black px-7 py-2 hover:bg-neutral-300 w-auto h-min mt-10'>Back to Feed</div>
             </a>
           </div>
-
-
         </div>
         <div className="w-1/2 h-screen flex flex-col justify-center lg:pl-12">
           <div className="display-font text-5xl mb-2">
