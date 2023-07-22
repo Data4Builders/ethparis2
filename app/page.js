@@ -4,7 +4,7 @@ import Story from '../components/Story'
 import Web3 from 'web3';
 import { init, useLazyQuery } from "@airstack/airstack-react";
 const Parser = require("rss-parser");
-import { fetchQuicknodeData } from "../api/api";
+import { fetchQuicknodeData } from "../pages/api/api";
 
 let airstackVariables = { owner: null };
 let nftCollectionData;
@@ -146,28 +146,28 @@ export default function Home() {
                   `;
           });
 
-            data.Wallet.tokenBalances.forEach(balance => {
-              if(balance.tokenNfts !== null) {
-                  tagPlaintext += `
+          data.Wallet.tokenBalances.forEach(balance => {
+            if (balance.tokenNfts !== null) {
+              tagPlaintext += `
                       Blockchain: ${balance.tokenNfts.blockchain}
                       `;
             }
           });
 
-            for(let key in nftCollectionData) {
-              setquickNodeLoaded(true);
-              let collection = nftCollectionData[key].collection;
-              tagPlaintext += "Information about art this person owns:"
-              tagPlaintext += `Contract Name: ${collection.contract.name}\n`;
-              tagPlaintext += `Circulating Supply: ${collection.circulatingSupply}\n`;
-              tagPlaintext += `Contract Symbol: ${collection.contract.symbol}\n`;
-              tagPlaintext += `External URL: ${collection.externalUrl}\n`;
-              tagPlaintext += `Collection Name: ${collection.name}\n`;
-              tagPlaintext += `Collection Symbol: ${collection.symbol}\n`;
-              tagPlaintext += `Total Supply: ${collection.totalSupply}\n`;
-              tagPlaintext += `Twitter Username: ${collection.twitterUsername}\n\n`;
-            }
-            setTagsUpdate(true)
+          for (let key in nftCollectionData) {
+            setquickNodeLoaded(true);
+            let collection = nftCollectionData[key].collection;
+            tagPlaintext += "Information about art this person owns:"
+            tagPlaintext += `Contract Name: ${collection.contract.name}\n`;
+            tagPlaintext += `Circulating Supply: ${collection.circulatingSupply}\n`;
+            tagPlaintext += `Contract Symbol: ${collection.contract.symbol}\n`;
+            tagPlaintext += `External URL: ${collection.externalUrl}\n`;
+            tagPlaintext += `Collection Name: ${collection.name}\n`;
+            tagPlaintext += `Collection Symbol: ${collection.symbol}\n`;
+            tagPlaintext += `Total Supply: ${collection.totalSupply}\n`;
+            tagPlaintext += `Twitter Username: ${collection.twitterUsername}\n\n`;
+          }
+          setTagsUpdate(true)
         }
       }
     } else {
@@ -220,13 +220,13 @@ export default function Home() {
     );
     return feed;
   }
-  
+
   useEffect(() => {
     if (!tags) return;
     if (stories.length >= 15) return;
     Promise.all(feedUrls.map((url) => getRSSFeed(url))).then((feeds) => {
       const items = feeds.flatMap((feed) => feed.items);
-  
+
       const sortedItems = items.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
       console.log(sortedItems)
 
@@ -242,7 +242,7 @@ export default function Home() {
             },
             body: JSON.stringify({ tags: tags, title: story.title }),
           });
-          
+
           if (response.ok) {
             let shouldAddStory = await response.json();
             shouldAddStory = eval(shouldAddStory).tags
@@ -260,23 +260,23 @@ export default function Home() {
                   headers: {
                     'Content-Type': 'application/json',
                   },
-                  body: JSON.stringify({ tag: tags_js[i%tags_js.length], title: story.title }),
+                  body: JSON.stringify({ tag: tags_js[i % tags_js.length], title: story.title }),
                 });
-              
+
                 let responseText = await storyTagResponse.json();
                 responseText = eval(responseText).tags
-              
+
                 // Assuming a relevant tag is determined by non-empty response text.
-                if (responseText == tags_js[i%tags_js.length]) {
+                if (responseText == tags_js[i % tags_js.length]) {
                   relevantTags.push(responseText);
-              
+
                   // Breaks the loop when we have 3 relevant tags.
                   if (relevantTags.length === 3) {
                     break;
                   }
                 }
               }
-              
+
               if (relevantTags.length > 0) {
                 story.tags = relevantTags;
 
@@ -289,11 +289,11 @@ export default function Home() {
           }
         }
       };
-  
+
       filterStories();
     });
   }, [tags]);
-  
+
   console.log({ stories })
 
   return (
