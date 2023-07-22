@@ -196,8 +196,8 @@ export default function Home() {
         body: JSON.stringify(tagPlaintext)
       });
       const openAIdata = await res.json();
-      console.log(openAIdata);
-      setTags(openAIdata);
+      console.log(eval(openAIdata).tags);
+      setTags(eval(openAIdata).tags);
     } catch (error) {
       console.error(error.message);
     } finally {
@@ -232,7 +232,7 @@ export default function Home() {
 
       const filterStories = async () => {
         for (const story of sortedItems) {
-          if (storycounter >= 4) { // important line of code! number of relevant articles that are loaded
+          if (storycounter >= 10) { // important line of code! number of relevant articles that are loaded
             break;
           }
           const response = await fetch('/api/articleselector', {
@@ -244,11 +244,45 @@ export default function Home() {
           });
           
           if (response.ok) {
-            const shouldAddStory = await response.text();
-            //console.log(shouldAddStory)
-            if (shouldAddStory == '{"tags":"true"}') {
-              setStories((prevStories) => [...prevStories, story]);  // Update the state immediately
-              storycounter += 1;
+            let shouldAddStory = await response.json();
+            shouldAddStory = eval(shouldAddStory).tags
+
+            if (shouldAddStory == 'true') {
+
+              //add tag logic to specific story before we add it to the array
+              let relevantTags = [];
+              let tags_js = eval(tags)
+              console.log(tags_js)
+              let randomStart = Math.floor(Math.random() * 7);
+              for (let i = randomStart; i < (randomStart + tags_js.length); i++) {
+                const storyTagResponse = await fetch('/api/story-tagger', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({ tag: tags_js[i%tags_js.length], title: story.title }),
+                });
+              
+                let responseText = await storyTagResponse.json();
+                responseText = eval(responseText).tags
+              
+                // Assuming a relevant tag is determined by non-empty response text.
+                if (responseText == tags_js[i%tags_js.length]) {
+                  relevantTags.push(responseText);
+              
+                  // Breaks the loop when we have 3 relevant tags.
+                  if (relevantTags.length === 3) {
+                    break;
+                  }
+                }
+              }
+              
+              if (relevantTags.length > 0) {
+                story.tags = relevantTags;
+
+                setStories((prevStories) => [...prevStories, story]);  // Update the state immediately
+                storycounter += 1;
+              }
             }
           } else {
             console.error('API response was not ok for story', story);
