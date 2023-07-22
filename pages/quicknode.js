@@ -38,7 +38,7 @@ const variables = ""
   
 
 const NFTsQuickNode = () => {
-    const { data, loading, error } = useQuery(query, variables, { cache: false });
+    const { data, loading, error } = useQuery(nftQuery, variables, { cache: false });
     let tokenAddresses = [];
 
     if (loading) {
@@ -53,7 +53,6 @@ const NFTsQuickNode = () => {
     if(data) {
         //console.log(data.TokenBalances.TokenBalance)
     }
-
     
     if (data) {
         for(let i=0; i<data.TokenBalances.TokenBalance.length; i++) {
@@ -80,7 +79,6 @@ const NFTsQuickNode = () => {
         console.log(nftDetails);
         }).catch((error) => console.error(error));
     }
-    
 };
   
 export default NFTsQuickNode;
