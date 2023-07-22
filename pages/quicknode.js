@@ -8,7 +8,7 @@ const qn = new QuickNode.API({
     graphApiKey: 'QN_6e0e82be1d3b4f95934fc950c6699997', 
 });
 
-const query = `query MyQuery {
+const nftQuery = `query MyQuery {
     TokenBalances(
       input: {filter: {owner: {_eq: "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"}}, blockchain: ethereum, limit: 25}
     ) {
