@@ -103,7 +103,7 @@ export default function Home() {
                 {accounts.twitter ? (
                   <div>
                     <div className="flex items-center">
-                      <div className="bg-neutral-700 mt-2 px-1">{accounts.twitter}</div>
+                      <div className="bg-neutral-700 mt-2 px-1">{accounts.twitter.handle}</div>
                       <div className="pl-2 mt-2 hover:cursor-pointer"><IoTrashSharp className="" /></div>
                     </div>
                   </div>
@@ -126,7 +126,7 @@ export default function Home() {
                 {accounts.github ? (
                   <div>
                     <div className="flex items-center">
-                      <div className="bg-neutral-700 mt-2 px-1">{accounts.github}</div>
+                      <div className="bg-neutral-700 mt-2 px-1">{accounts.github.handle}</div>
                       <div className="pl-2 mt-2 hover:cursor-pointer"><IoTrashSharp className="" /></div>
                     </div>
                   </div>
