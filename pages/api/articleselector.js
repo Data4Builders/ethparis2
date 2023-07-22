@@ -6,10 +6,8 @@ export default async function handler(req, res) {
     return res.status(405).end();
   }
 
-  const tagText = req.body;
-  if (!tagText) {
-    return res.status(400).json({ error: 'Missing text in request body' });
-  }
+  const tagText = req.body.tags;
+  const title = req.body.title;
 
   try {
     const response = await axios.post(
@@ -19,10 +17,10 @@ export default async function handler(req, res) {
         messages: [
           {
             role: "system",
-            content: "Generate a list of 7 unique user tags in the format 'tag1, tag2, tag3', tags based on data about a user. Make them one to two words and as hyper-specific as possible (type of tech used, builder, investor, long-term, newbie, art collector, nyc events, etc). User Data:" + tagText
+            content: "Reply 'true' if you're 100% sure someone with these interests: "+tagText+", would like an article called:" + title
           }
         ],
-        max_tokens: 75,
+        max_tokens: 10,
       },
       {
         headers: {

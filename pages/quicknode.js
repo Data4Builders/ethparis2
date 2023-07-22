@@ -36,7 +36,6 @@ const nftQuery = `query MyQuery {
 
 const variables = ""
   
-
 const NFTsQuickNode = () => {
     const { data, loading, error } = useQuery(nftQuery, variables, { cache: false });
     let tokenAddresses = [];
@@ -80,5 +79,5 @@ const NFTsQuickNode = () => {
         }).catch((error) => console.error(error));
     }
 };
-  
+
 export default NFTsQuickNode;
