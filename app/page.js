@@ -95,6 +95,10 @@ export default function Home() {
   const [web3, setWeb3] = useState(null);
 
   const [loadData, setLoadData] = useState(false);
+  const [quickNodeLoaded, setquickNodeLoaded] = useState(false);
+  const [loadingOpenAI, setLoadingOpenAI] = useState(false);
+  const [tags, setTags] = useState([]);
+  const [tagsUpdate, setTagsUpdate] = useState(false);
 
   
   const [airstackfetch, { data, loading, error }] = useLazyQuery(airstackQuery, airstackVariables);
@@ -118,6 +122,7 @@ export default function Home() {
         console.log(data)
 
         if(data) {
+            setTagsUpdate(false)
             const nftCollectionData = await getNftData(data);
         
             tagPlaintext = ""
@@ -154,8 +159,7 @@ export default function Home() {
             });
 
             for(let key in nftCollectionData) {
-              console.log("CALLED")
-              console.log(key)
+              setquickNodeLoaded(true);
               let collection = nftCollectionData[key].collection;
               tagPlaintext += `Address: ${collection.address}\n`;
               tagPlaintext += `Circulating Supply: ${collection.circulatingSupply}\n`;
@@ -168,10 +172,8 @@ export default function Home() {
               tagPlaintext += `Total Supply: ${collection.totalSupply}\n`;
               tagPlaintext += `Twitter Username: ${collection.twitterUsername}\n\n`;
             }
-          
-            
+            setTagsUpdate(true)
         }
-        console.log(tagPlaintext);
       }
     } else {
       console.log("No wallet");
@@ -185,6 +187,34 @@ export default function Home() {
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.97 Safari/537.36",
     },
   });
+
+  const getTags = async () => {
+    setLoadingOpenAI(true);
+    console.log("within tags")
+    console.log(tagPlaintext)
+    try {
+      const res = await fetch('/api/openai', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(tagPlaintext)
+      });
+      const data = await res.json();
+      console.log(data);
+      setTags(data);
+    } catch (error) {
+      console.error(error.message);
+    } finally {
+      setLoadingOpenAI(false);
+      setTagsUpdate(false)
+    }
+  };
+
+  if(tagPlaintext.length > 0 && quickNodeLoaded && !loadingOpenAI && tagsUpdate) {
+    console.log(getTags());
+  }
+
 
   async function getRSSFeed(url) {
     const feed = await parser.parseString(
