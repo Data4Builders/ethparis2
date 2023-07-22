@@ -45,3 +45,38 @@ body {
 .bg-black {
   cursor: pointer;
 }
+
+.tag-red {
+  background: #ec7878;
+  color: black;
+}
+
+.tag-orange {
+  background: #ecc178;
+  color: black;
+}
+
+.tag-green {
+  background: #7cec78;
+  color: black;
+}
+
+.tag-yellow {
+  background: #ecde78;
+  color: black;
+}
+
+.tag-blue {
+  background: #78b8ec;
+  color: black;
+}
+
+.tag-purple {
+  background: #a678ec;
+  color: black;
+}
+
+.tag-purple {
+  background: #a678ec;
+  color: black;
+}
