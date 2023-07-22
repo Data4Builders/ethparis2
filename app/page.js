@@ -9,6 +9,8 @@ const Parser = require("rss-parser");
 import { fetchQuicknodeData } from "../api/api";
 
 let airstackVariables = {owner:null};
+let nftCollectionData;
+let tagPlaintext = "";
 
 export default function Home() {
   init('ee48db4ca302405691ee47714ed144f3'); 
@@ -96,7 +98,10 @@ export default function Home() {
 
   
   const [airstackfetch, { data, loading, error }] = useLazyQuery(airstackQuery, airstackVariables);
-  console.log(airstackVariables)
+
+  async function getNftData(data) {
+    return fetchQuicknodeData(data)
+  }
 
   async function connect() {
     if (typeof window !== 'undefined' && typeof window.ethereum !== 'undefined') {
@@ -109,13 +114,64 @@ export default function Home() {
         console.log("Connected wallet address: ", accounts[0]);
         airstackVariables.owner = accounts[0]
         //airstackVariables.owner = "0x0B64179958f7e98C49316119852128130De23dD7"
-        //console.log(airstackVariables)
         airstackfetch();
+        console.log(data)
 
         if(data) {
-          //console.log(fetchQuicknodeData(data))
+            const nftCollectionData = await getNftData(data);
+        
+            tagPlaintext = ""
+            console.log("output from nft collection data")
+            console.log(nftCollectionData)
+
+            await new Promise(r => setTimeout(r, 3000))
+            data.Wallet.poaps.forEach(poap => {
+              tagPlaintext += `
+                  ID: ${poap.id}
+                  Blockchain: ${poap.blockchain}
+                  dAppName: ${poap.dappName}
+                  Event ID: ${poap.eventId}
+                  Created At: ${poap.createdAtBlockTimestamp}
+                  Event Name: ${poap.poapEvent.eventName}
+                  Event Description: ${poap.poapEvent.description}
+                  Event Country: ${poap.poapEvent.country}
+                  Event City: ${poap.poapEvent.city}
+                  Event Start Date: ${poap.poapEvent.startDate}
+                  Event End Date: ${poap.poapEvent.endDate}
+                  Event URL: ${poap.poapEvent.eventURL}
+                  `;
+            });
+
+            data.Wallet.tokenBalances.forEach(balance => {
+              if(balance.tokenNfts !== null) {
+                  tagPlaintext += `
+                      Token ID: ${balance.tokenNfts.id}
+                      Address: ${balance.tokenNfts.address}
+                      Blockchain: ${balance.tokenNfts.blockchain}
+                      Last Transfer Timestamp: ${balance.tokenNfts.lastTransferTimestamp}
+                      `;
+              }
+            });
+
+            for(let key in nftCollectionData) {
+              console.log("CALLED")
+              console.log(key)
+              let collection = nftCollectionData[key].collection;
+              tagPlaintext += `Address: ${collection.address}\n`;
+              tagPlaintext += `Circulating Supply: ${collection.circulatingSupply}\n`;
+              tagPlaintext += `Contract Address: ${collection.contract.address}\n`;
+              tagPlaintext += `Contract Name: ${collection.contract.name}\n`;
+              tagPlaintext += `Contract Symbol: ${collection.contract.symbol}\n`;
+              tagPlaintext += `External URL: ${collection.externalUrl}\n`;
+              tagPlaintext += `Collection Name: ${collection.name}\n`;
+              tagPlaintext += `Collection Symbol: ${collection.symbol}\n`;
+              tagPlaintext += `Total Supply: ${collection.totalSupply}\n`;
+              tagPlaintext += `Twitter Username: ${collection.twitterUsername}\n\n`;
+            }
+          
+            
         }
-        console.log(data)
+        console.log(tagPlaintext);
       }
     } else {
       console.log("No wallet");
