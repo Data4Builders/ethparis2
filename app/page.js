@@ -1,10 +1,7 @@
 "use client"
-import Image from 'next/image'
-import styles from './page.module.css'
 import { useState, useEffect } from 'react';
 import Story from '../components/Story'
 import Web3 from 'web3';
-import { fetchAirstackData } from "../api/api";
 const Parser = require("rss-parser");
 
 export default function Home() {
@@ -67,7 +64,6 @@ export default function Home() {
     });
   }, [])
 
-  console.log({ stories })
 
   return (
     <div className="container mx-auto px-4">
