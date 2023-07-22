@@ -5,6 +5,9 @@ const TruthWallet = new mongoose.Schema({
     type: String,
     required: [true, 'Please provide a address for this wallet.'],
   },
+  lens: {
+    type: String,
+  },
   ens: {
     type: String,
   },
