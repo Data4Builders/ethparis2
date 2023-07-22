@@ -1,18 +1,19 @@
 "use client"
 import { useState, useEffect } from 'react';
 import { IoTrashSharp } from "react-icons/io5";
+import { useAccount } from 'wagmi'
 const Parser = require("rss-parser");
 
 export default function Home() {
 
+  const { address, isConnected } = useAccount()
+
   const [accounts, setAccounts] = useState({
-    address: ['0xa8109bA28CFDD0E38Dfd178C13bC8eCdb56662E4',
-      '0xa8109bA28CFDD0E38Dfd178C13bC8eCdb56662E4',
-      '0xa8109bA28CFDD0E38Dfd178C13bC8eCdb56662E4'],
-    ens: ['luca.eth'],
-    github: ['@codeluca'],
-    worldcoin: [],
-    twitter: ['@lucadev'],
+    address: ['loading...',],
+    ens: ['loading...'],
+    github: ['loading...'],
+    worldcoin: ['loading...'],
+    twitter: ['loading...'],
   });
 
   const [tags, setTags] = useState([{
@@ -32,6 +33,16 @@ export default function Home() {
     color: "orange"
   }]);
 
+  useEffect(() => {
+    if (address) {
+      fetch('/api/' + address)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data && data[0])
+            setAccounts(data[0]);
+        })
+    }
+  }, [address])
 
   return (
     <div className="bg-neutral-900 text-white">
@@ -47,8 +58,8 @@ export default function Home() {
               Addresses
             </div>
             <div>
-              <div>
-                {accounts.address.map((a) => (
+              <div className="flex flex-col">
+                {[accounts.address].map((a) => (
                   <div className="flex items-center">
                     <div className="bg-neutral-700 mt-2 px-1">{a}</div>
                     <div className="pl-2 mt-2 hover:cursor-pointer"><IoTrashSharp className="" /></div>
@@ -68,17 +79,18 @@ export default function Home() {
                 ENS
               </div>
               <div>
-                <div>
-                  {accounts.ens.map((a) => (
+                {accounts.ens ? (
+                  <div>
                     <div className="flex items-center">
-                      <div className="bg-neutral-700 mt-2 px-1">{a}</div>
+                      <div className="bg-neutral-700 mt-2 px-1">{accounts.ens}</div>
                       <div className="pl-2 mt-2 hover:cursor-pointer"><IoTrashSharp className="" /></div>
                     </div>
-                  ))}
-                </div>
-                <div className="border px-2 w-min mt-3 hover:bg-white hover:text-black hover:cursor-pointer">
-                  +
-                </div>
+                  </div>
+                ) : (
+                  <div className="border px-2 w-min mt-3 hover:bg-white hover:text-black hover:cursor-pointer">
+                    +
+                  </div>
+                )}
               </div>
             </section>
 
@@ -88,17 +100,18 @@ export default function Home() {
                 Twitter
               </div>
               <div>
-                <div>
-                  {accounts.twitter.map((a) => (
+                {accounts.twitter ? (
+                  <div>
                     <div className="flex items-center">
-                      <div className="bg-neutral-700 mt-2 px-1">{a}</div>
+                      <div className="bg-neutral-700 mt-2 px-1">{accounts.twitter}</div>
                       <div className="pl-2 mt-2 hover:cursor-pointer"><IoTrashSharp className="" /></div>
                     </div>
-                  ))}
-                </div>
-                <div className="border px-2 w-min mt-3 hover:bg-white hover:text-black hover:cursor-pointer">
-                  +
-                </div>
+                  </div>
+                ) : (
+                  <div className="border px-2 w-min mt-3 hover:bg-white hover:text-black hover:cursor-pointer">
+                    +
+                  </div>
+                )}
               </div>
             </section>
           </div>
@@ -110,17 +123,18 @@ export default function Home() {
                 GitHub
               </div>
               <div>
-                <div>
-                  {accounts.github.map((a) => (
+                {accounts.github ? (
+                  <div>
                     <div className="flex items-center">
-                      <div className="bg-neutral-700 mt-2 px-1">{a}</div>
+                      <div className="bg-neutral-700 mt-2 px-1">{accounts.github}</div>
                       <div className="pl-2 mt-2 hover:cursor-pointer"><IoTrashSharp className="" /></div>
                     </div>
-                  ))}
-                </div>
-                <div className="border px-2 w-min mt-3 hover:bg-white hover:text-black hover:cursor-pointer">
-                  +
-                </div>
+                  </div>
+                ) : (
+                  <div className="border px-2 w-min mt-3 hover:bg-white hover:text-black hover:cursor-pointer">
+                    +
+                  </div>
+                )}
               </div>
             </section>
 
@@ -130,19 +144,24 @@ export default function Home() {
                 WorldCoin
               </div>
               <div>
-                <div>
-                  {accounts.worldcoin.map((a) => (
+                {accounts.worldcoin ? (
+                  <div>
                     <div className="flex items-center">
-                      <div className="bg-neutral-700 mt-2 px-1">{a}</div>
+                      <div className="bg-neutral-700 mt-2 px-1">{accounts.worldcoin}</div>
                       <div className="pl-2 mt-2 hover:cursor-pointer"><IoTrashSharp className="" /></div>
                     </div>
-                  ))}
-                </div>
-                <div className="border px-2 w-min mt-3 hover:bg-white hover:text-black hover:cursor-pointer">
-                  +
-                </div>
+                  </div>
+                ) : (
+                  <div className="border px-2 w-min mt-3 hover:bg-white hover:text-black hover:cursor-pointer">
+                    +
+                  </div>
+                )}
               </div>
             </section>
+
+            <a href="/new_home">
+              <div className='bg-white text-black px-7 py-2 hover:bg-neutral-300 w-auto h-min mt-10'>Back to Feed</div>
+            </a>
           </div>
 
 

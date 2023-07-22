@@ -4,6 +4,8 @@ import Story from '../../components/Story'
 const Parser = require("rss-parser");
 import { useWeb3Modal } from "@web3modal/react"
 import { useAccount, useConnect, useDisconnect } from 'wagmi'
+import { IoPersonCircle } from "react-icons/io5";
+import Link from 'next/link';
 
 const feedUrls = [
   "https://rss.app/feeds/EsnHA9U6TsdCtbfa.xml", //cointelegraph Bitcoin
@@ -88,22 +90,30 @@ export default function Home() {
   return (
     <div className="container mx-auto px-4">
       <div className="flex justify-start items-center text-center flex-col mt-10">
-        <span className="text-xl mb-5">
-          <b>Personalised</b> crypto news that puts your privacy first,<br />powered by <b>data4builders</b>.
-        </span>
         {
           isConnected && !isLoading ? (
+            <div className="flex w-full justify-end items-center relative">
+              <a href="/profile" className="hover:opacity-50">
+                <div className="flex flex-col items-center justify-center absolute m-auto left-0 right-0 w-min top-0">
+                  <IoPersonCircle className="text-5xl" />
+                  <span className="text-xs">{address.substring(0, 8)}..</span>
+                </div>
+              </a>
+              <div onClick={disconnect} className='bg-black text-white px-4 py-2 hover:bg-gray-800 w-auto h-min mt-3'>Disconnect</div>
+            </div>
+          ) : (
             <>
-              <div className='text-neutral-800 px-4 py-2  w-auto'>{address} Connected</div>
-              <div onClick={disconnect} className='bg-black text-white px-4 py-2 hover:bg-gray-800 w-auto'>Disconnect</div>
+              <span className="text-xl mb-5">
+                <b>Personalised</b> crypto news that puts your privacy first,<br />powered by <b>data4builders</b>.
+              </span>
+              <div onClick={() => open()} className='bg-black text-white px-4 py-2 hover:bg-gray-800 w-auto'>Connect Wallet</div>
             </>
-          ) :
-            <div onClick={() => open()} className='bg-black text-white px-4 py-2 hover:bg-gray-800 w-auto'>Connect Wallet</div>
+          )
         }
-      </div>
+      </div >
       <div className="story-components-wrapper mt-10">
-        {stories ? stories.map((story, i) => <Story key={i} story={story} />) : <div>Loading...</div>}
+        {stories && stories.length > 0 ? stories.map((story, i) => <Story key={i} story={story} />) : <div>Loading...</div>}
       </div>
-    </div>
+    </div >
   )
 }
