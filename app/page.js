@@ -4,10 +4,60 @@ import styles from './page.module.css'
 import { useState, useEffect } from 'react';
 import Story from '../components/Story'
 import Web3 from 'web3';
-import { fetchAirstackData } from "../api/api";
+import { init, useLazyQuery } from "@airstack/airstack-react";
 const Parser = require("rss-parser");
 
+
 export default function Home() {
+  init('ee48db4ca302405691ee47714ed144f3'); 
+
+  const airstackQuery= `query PoapsAndEventsForWallet($owner: Identity) {
+    Poaps(input: {filter: {owner: {_eq: $owner}}, blockchain: ALL}) {
+      Poap {
+        id
+        chainId
+        blockchain
+        dappName
+        dappSlug
+        dappVersion
+        eventId
+        createdAtBlockTimestamp
+        createdAtBlockNumber
+        tokenId
+        tokenAddress
+        tokenUri
+        poapEvent {
+          id
+          chainId
+          blockchain
+          dappName
+          dappSlug
+          dappVersion
+          eventId
+          metadata
+          contentType
+          contentValue {
+            image {
+              extraSmall
+              small
+              medium
+              large
+              original
+            }
+          }
+          eventName
+          description
+          country
+          city
+          startDate
+          endDate
+          isVirtualEvent
+          eventURL
+        }
+      }
+    }
+  }`
+
   const feedUrls = [
     "https://rss.app/feeds/EsnHA9U6TsdCtbfa.xml", //cointelegraph Bitcoin
     "https://rss.app/feeds/zQQ7PRR5jF0MzvzI.xml", //cointelegraph altcoins
@@ -22,9 +72,14 @@ export default function Home() {
   ];
 
   const [stories, setStories] = useState([]);
-
   const [web3, setWeb3] = useState(null);
 
+  const [loadData, setLoadData] = useState(false);
+
+  let variables = {owner:null};
+
+  const [airstackfetch, { data, loading, error }] = useLazyQuery(airstackQuery, variables);
+  
   async function connect() {
     if (typeof window !== 'undefined' && typeof window.ethereum !== 'undefined') {
       await window.ethereum.request({ method: "eth_requestAccounts" });
@@ -34,9 +89,13 @@ export default function Home() {
       const accounts = await web3Instance.eth.getAccounts();
       if (accounts.length > 0) {
         console.log("Connected wallet address: ", accounts[0]);
+        variables.owner = accounts[0]
+        airstackfetch();
+        console.log(data)
       }
     } else {
       console.log("No wallet");
+      return null;
     }
   }
 
