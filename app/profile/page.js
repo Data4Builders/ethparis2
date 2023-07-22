@@ -16,22 +16,22 @@ export default function Home() {
     twitter: ['loading...'],
   });
 
-  const [tags, setTags] = useState([{
-    name: "USDD",
-    color: "red"
-  }, {
-    name: "Huboi",
-    color: "blue"
-  }, {
-    name: "Paris",
-    color: "green"
-  }, {
-    name: "Soccer",
-    color: "purple"
-  }, {
-    name: "Human",
-    color: "orange"
-  }]);
+  const [tags, setTags] = useState([]);
+  //   name: "USDD",
+  //   color: "red"
+  // }, {
+  //   name: "Huboi",
+  //   color: "blue"
+  // }, {
+  //   name: "Paris",
+  //   color: "green"
+  // }, {
+  //   name: "Soccer",
+  //   color: "purple"
+  // }, {
+  //   name: "Human",
+  //   color: "orange"
+  // }]);
 
   useEffect(() => {
     if (address) {
@@ -87,8 +87,8 @@ export default function Home() {
                     </div>
                   </div>
                 ) : (
-                  <div className="border px-2 w-min mt-3 hover:bg-white hover:text-black hover:cursor-pointer">
-                    +
+                  <div className="border px-2 w-min mt-3 hover:bg-white hover:text-black hover:cursor-pointer text-xs">
+                    Connect
                   </div>
                 )}
               </div>
@@ -103,13 +103,13 @@ export default function Home() {
                 {accounts.twitter ? (
                   <div>
                     <div className="flex items-center">
-                      <div className="bg-neutral-700 mt-2 px-1">{accounts.twitter}</div>
+                      <div className="bg-neutral-700 mt-2 px-1">{accounts.twitter.handle}</div>
                       <div className="pl-2 mt-2 hover:cursor-pointer"><IoTrashSharp className="" /></div>
                     </div>
                   </div>
                 ) : (
-                  <div className="border px-2 w-min mt-3 hover:bg-white hover:text-black hover:cursor-pointer">
-                    +
+                  <div className="border px-2 w-min mt-3 hover:bg-white hover:text-black hover:cursor-pointer text-xs">
+                    Connect
                   </div>
                 )}
               </div>
@@ -126,13 +126,13 @@ export default function Home() {
                 {accounts.github ? (
                   <div>
                     <div className="flex items-center">
-                      <div className="bg-neutral-700 mt-2 px-1">{accounts.github}</div>
+                      <div className="bg-neutral-700 mt-2 px-1">{accounts.github.handle}</div>
                       <div className="pl-2 mt-2 hover:cursor-pointer"><IoTrashSharp className="" /></div>
                     </div>
                   </div>
                 ) : (
-                  <div className="border px-2 w-min mt-3 hover:bg-white hover:text-black hover:cursor-pointer">
-                    +
+                  <div className="border px-2 w-min mt-3 text-xs hover:bg-white hover:text-black hover:cursor-pointer">
+                    Connect
                   </div>
                 )}
               </div>
@@ -152,8 +152,8 @@ export default function Home() {
                     </div>
                   </div>
                 ) : (
-                  <div className="border px-2 w-min mt-3 hover:bg-white hover:text-black hover:cursor-pointer">
-                    +
+                  <div className="border px-2 w-min mt-3 hover:bg-white hover:text-black hover:cursor-pointer text-xs">
+                    Connect
                   </div>
                 )}
               </div>
