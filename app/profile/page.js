@@ -14,7 +14,9 @@ export default function Home() {
     github: ['loading...'],
     worldcoin: ['loading...'],
     twitter: ['loading...'],
+    sismo: ['loading...'], // Add this line
   });
+  
 
   const [tags, setTags] = useState([]);
   //   name: "USDD",
@@ -113,8 +115,33 @@ export default function Home() {
                   </div>
                 )}
               </div>
+              
             </section>
           </div>
+
+          {/* Sismo */}
+<section className="w-1/2">
+  <div className="mt-3 display-font italic text-2xl">
+    Sismo
+  </div>
+  <div>
+    {accounts.sismo ? (
+      <div>
+        <div className="flex items-center">
+          <div className="bg-neutral-700 mt-2 px-1">{accounts.sismo}</div>
+          <div className="pl-2 mt-2 hover:cursor-pointer"><IoTrashSharp className="" /></div>
+        </div>
+      </div>
+    ) : (
+      <div className="border px-2 w-min mt-3 hover:bg-white hover:text-black hover:cursor-pointer text-xs">
+        Connect
+      </div>
+    )}
+  </div>
+</section>
+
+          
+          
 
           <div className="flex flex-wrap justify mt-5">
             {/* GitHub */}
