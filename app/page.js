@@ -4,7 +4,7 @@ import Story from '../components/Story'
 import Web3 from 'web3';
 import { init, useLazyQuery } from "@airstack/airstack-react";
 const Parser = require("rss-parser");
-import { fetchQuicknodeData } from "../pages/api/api";
+import { fetchQuicknodeData } from "../lib/quicknode";
 
 let airstackVariables = { owner: null };
 let nftCollectionData;

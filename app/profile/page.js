@@ -16,22 +16,22 @@ export default function Home() {
     twitter: ['loading...'],
   });
 
-  const [tags, setTags] = useState([{
-    name: "USDD",
-    color: "red"
-  }, {
-    name: "Huboi",
-    color: "blue"
-  }, {
-    name: "Paris",
-    color: "green"
-  }, {
-    name: "Soccer",
-    color: "purple"
-  }, {
-    name: "Human",
-    color: "orange"
-  }]);
+  const [tags, setTags] = useState([]);
+  //   name: "USDD",
+  //   color: "red"
+  // }, {
+  //   name: "Huboi",
+  //   color: "blue"
+  // }, {
+  //   name: "Paris",
+  //   color: "green"
+  // }, {
+  //   name: "Soccer",
+  //   color: "purple"
+  // }, {
+  //   name: "Human",
+  //   color: "orange"
+  // }]);
 
   useEffect(() => {
     if (address) {
@@ -87,8 +87,8 @@ export default function Home() {
                     </div>
                   </div>
                 ) : (
-                  <div className="border px-2 w-min mt-3 hover:bg-white hover:text-black hover:cursor-pointer">
-                    +
+                  <div className="border px-2 w-min mt-3 hover:bg-white hover:text-black hover:cursor-pointer text-xs">
+                    Connect
                   </div>
                 )}
               </div>
@@ -108,8 +108,8 @@ export default function Home() {
                     </div>
                   </div>
                 ) : (
-                  <div className="border px-2 w-min mt-3 hover:bg-white hover:text-black hover:cursor-pointer">
-                    +
+                  <div className="border px-2 w-min mt-3 hover:bg-white hover:text-black hover:cursor-pointer text-xs">
+                    Connect
                   </div>
                 )}
               </div>
@@ -131,8 +131,8 @@ export default function Home() {
                     </div>
                   </div>
                 ) : (
-                  <div className="border px-2 w-min mt-3 hover:bg-white hover:text-black hover:cursor-pointer">
-                    +
+                  <div className="border px-2 w-min mt-3 text-xs hover:bg-white hover:text-black hover:cursor-pointer">
+                    Connect
                   </div>
                 )}
               </div>
@@ -152,8 +152,8 @@ export default function Home() {
                     </div>
                   </div>
                 ) : (
-                  <div className="border px-2 w-min mt-3 hover:bg-white hover:text-black hover:cursor-pointer">
-                    +
+                  <div className="border px-2 w-min mt-3 hover:bg-white hover:text-black hover:cursor-pointer text-xs">
+                    Connect
                   </div>
                 )}
               </div>
