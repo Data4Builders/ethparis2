@@ -97,7 +97,7 @@ export default function Home() {
   const [loadData, setLoadData] = useState(false);
   const [quickNodeLoaded, setquickNodeLoaded] = useState(false);
   const [loadingOpenAI, setLoadingOpenAI] = useState(false);
-  const [tags, setTags] = useState([]);
+  const [tags, setTags] = useState(null);
   const [tagsUpdate, setTagsUpdate] = useState(false);
 
   
@@ -134,15 +134,9 @@ export default function Home() {
               tagPlaintext += `
                   ID: ${poap.id}
                   Blockchain: ${poap.blockchain}
-                  dAppName: ${poap.dappName}
-                  Event ID: ${poap.eventId}
-                  Created At: ${poap.createdAtBlockTimestamp}
-                  Event Name: ${poap.poapEvent.eventName}
                   Event Description: ${poap.poapEvent.description}
                   Event Country: ${poap.poapEvent.country}
                   Event City: ${poap.poapEvent.city}
-                  Event Start Date: ${poap.poapEvent.startDate}
-                  Event End Date: ${poap.poapEvent.endDate}
                   Event URL: ${poap.poapEvent.eventURL}
                   `;
             });
@@ -161,10 +155,9 @@ export default function Home() {
             for(let key in nftCollectionData) {
               setquickNodeLoaded(true);
               let collection = nftCollectionData[key].collection;
-              tagPlaintext += `Address: ${collection.address}\n`;
-              tagPlaintext += `Circulating Supply: ${collection.circulatingSupply}\n`;
-              tagPlaintext += `Contract Address: ${collection.contract.address}\n`;
+              tagPlaintext += "Information about art this person owns:"
               tagPlaintext += `Contract Name: ${collection.contract.name}\n`;
+              tagPlaintext += `Circulating Supply: ${collection.circulatingSupply}\n`;
               tagPlaintext += `Contract Symbol: ${collection.contract.symbol}\n`;
               tagPlaintext += `External URL: ${collection.externalUrl}\n`;
               tagPlaintext += `Collection Name: ${collection.name}\n`;
@@ -200,9 +193,9 @@ export default function Home() {
         },
         body: JSON.stringify(tagPlaintext)
       });
-      const data = await res.json();
-      console.log(data);
-      setTags(data);
+      const openAIdata = await res.json();
+      console.log(openAIdata);
+      setTags(openAIdata);
     } catch (error) {
       console.error(error.message);
     } finally {
@@ -214,7 +207,6 @@ export default function Home() {
   if(tagPlaintext.length > 0 && quickNodeLoaded && !loadingOpenAI && tagsUpdate) {
     console.log(getTags());
   }
-
 
   async function getRSSFeed(url) {
     const feed = await parser.parseString(
@@ -228,17 +220,45 @@ export default function Home() {
   }
 
   useEffect(() => {
+    if (!tags) return;
+    if (stories.length >= 15) return;
     Promise.all(feedUrls.map((url) => getRSSFeed(url))).then((feeds) => {
       const items = feeds.flatMap((feed) => feed.items);
-
-      // Sort items by pubDate in descending order
+  
       const sortedItems = items.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
-
       console.log(sortedItems)
-      setStories(sortedItems)
-    });
-  }, [])
 
+      const filterStories = async () => {
+        let counter = 0;
+        for (const story of sortedItems) {
+          if (counter >= 4) { // important line of code! number of relevant articles that are loaded
+            break;
+          }
+          const response = await fetch('/api/articleselector', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ tags: tags, title: story.title }),
+          });
+          
+          if (response.ok) {
+            const shouldAddStory = await response.text();
+            //console.log(shouldAddStory)
+            if (shouldAddStory == '{"tags":"true"}') {
+              setStories((prevStories) => [...prevStories, story]);  // Update the state immediately
+              counter += 1;
+            }
+          } else {
+            console.error('API response was not ok for story', story);
+          }
+        }
+      };
+  
+      filterStories();
+    });
+  }, [tags]);
+  
   console.log({ stories })
 
   return (
