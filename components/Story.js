@@ -31,8 +31,9 @@ export default function Story({ story }) {
         <div className="display-font text-4xl">{story.title}</div>
         <div className="pb-4 pt-2">{story.contentSnippet}</div>
         <div className="flex">
-          <div className="bg-blue-300 px-2 mr-5">USDD</div>
-          <div className="bg-green-300 px-2 mr-5">Huboi</div>
+          {story.tags.map((tag, index) => (
+            <div key={index} className={`${index % 2 === 0 ? "bg-blue-300" : "bg-green-300"} px-2 mr-5`}>{tag}</div>
+          ))}
         </div>
       </div>
     </div>
