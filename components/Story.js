@@ -22,7 +22,9 @@ export default function Story({ story }) {
   return (
     <div className="w-full flex story-container md:flex-row flex-col">
       <div className="md:w-1/3 flex justify-center grayscale hover:grayscale-0">
-        <img src={srcImg} className="md:pr-9" alt="Story Image" />
+      <a href={story.link} target="_blank" rel="noopener noreferrer">
+  <img src={srcImg} className="md:pr-9" alt="Story Image" />
+</a>
       </div>
       <div className="md:w-2/3 flex flex-col justify-center h-100 pt-4 md:pt-0">
         <div>{story.creator} - {formattedDate}</div>
