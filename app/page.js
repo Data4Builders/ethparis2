@@ -277,10 +277,12 @@ export default function Home() {
                 }
               }
               
-              story.tags = relevantTags;
+              if (relevantTags.length > 0) {
+                story.tags = relevantTags;
 
-              setStories((prevStories) => [...prevStories, story]);  // Update the state immediately
-              storycounter += 1;
+                setStories((prevStories) => [...prevStories, story]);  // Update the state immediately
+                storycounter += 1;
+              }
             }
           } else {
             console.error('API response was not ok for story', story);
