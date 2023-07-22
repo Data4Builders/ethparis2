@@ -121,8 +121,11 @@ export default function Home() {
     Promise.all(feedUrls.map((url) => getRSSFeed(url))).then((feeds) => {
       const items = feeds.flatMap((feed) => feed.items);
 
-      console.log(items)
-      setStories(items)
+      // Sort items by pubDate in descending order
+      const sortedItems = items.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+
+      console.log(sortedItems)
+      setStories(sortedItems)
     });
   }, [])
 
