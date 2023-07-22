@@ -15,22 +15,10 @@ let tagPlaintext = "";
 export default function Home() {
   init('ee48db4ca302405691ee47714ed144f3'); 
 
-  const airstackQuery = `query walletDataQuery($owner: Identity!) {
+  const airstackQuery = `query combinedQuery($owner: Identity!) {
     Wallet(input: {identity: $owner, blockchain: ethereum}) {
-      poaps {
-        id
-        chainId
-        blockchain
-        dappName
-        dappSlug
-        dappVersion
-        eventId
-        createdAtBlockTimestamp
-        createdAtBlockNumber
-        tokenId
-        tokenAddress
-        tokenUri
-        poapEvent {
+      poaps: Poaps(input: {filter: {owner: {_eq: $owner}}, blockchain: ALL}) {
+        Poap {
           id
           chainId
           blockchain
@@ -38,45 +26,95 @@ export default function Home() {
           dappSlug
           dappVersion
           eventId
-          contentType
-          contentValue {
-            image {
-              original
+          createdAtBlockTimestamp
+          createdAtBlockNumber
+          tokenId
+          tokenAddress
+          tokenUri
+          poapEvent {
+            id
+            chainId
+            blockchain
+            dappName
+            dappSlug
+            dappVersion
+            eventId
+            contentType
+            contentValue {
+              image {
+                original
+              }
             }
+            eventName
+            description
+            country
+            city
+            startDate
+            endDate
+            isVirtualEvent
+            eventURL
           }
-          eventName
-          description
-          country
-          city
-          startDate
-          endDate
-          isVirtualEvent
-          eventURL
         }
       }
       tokenBalances {
-        tokenNfts {
-          id
-          address
-          tokenId
-          blockchain
-          chainId
-          type
-          totalSupply
-          tokenURI
-          contentType
-          contentValue {
-            image {
-              original
+        erc20: TokenBalances(input: {filter: {owner: {_in: [$owner]}, tokenType: {_in: [ERC20]}}, limit: 200}) {
+          tokenNfts:TokenBalance {
+            id: tokenId
+            address: tokenAddress
+            tokenId
+            blockchain
+            chainId
+            type: tokenType
+            totalSupply: amount
+            tokenURI
+            contentType
+            contentValue {
+              image {
+                original
+              }
             }
           }
-          lastTransferHash
-          lastTransferBlock
-          lastTransferTimestamp
+        }
+        erc721: TokenBalances(input: {filter: {owner: {_in: [$owner]}, tokenType: {_in: [ERC721]}, tokenAddress: {_nin: ["0x22C1f6050E56d2876009903609a2cC3fEf83B415"]}}, limit: 200}) {
+          tokenNfts:TokenBalance {
+            id: tokenId
+            address: tokenAddress
+            tokenId
+            blockchain
+            chainId
+            type: tokenType
+            totalSupply: amount
+            tokenURI
+            contentType
+            contentValue {
+              image {
+                original
+              }
+            }
+          }
+        }
+        poap: TokenBalances(input: {filter: {owner: {_in: [$owner]}, tokenAddress: {_eq: "0x22C1f6050E56d2876009903609a2cC3fEf83B415"}}, limit: 200}) {
+          tokenNfts:TokenBalance {
+            id: tokenId
+            address: tokenAddress
+            tokenId
+            blockchain
+            chainId
+            type: tokenType
+            totalSupply: amount
+            tokenURI
+            contentType
+            contentValue {
+              image {
+                original
+              }
+            }
+          }
         }
       }
     }
   }`
+  
 
   const feedUrls = [
     "https://rss.app/feeds/EsnHA9U6TsdCtbfa.xml", //cointelegraph Bitcoin
