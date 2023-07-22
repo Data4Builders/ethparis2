@@ -24,25 +24,27 @@ export default async function handler(req, res) {
 
           if (!web3bio) {
             const finalUser = await TruthWallet.create({ address: req.query.address });
-            return res.send(finalUser)
+            return res.redirect("/profile");
           }
 
           const saveableObject = {};
 
           saveableObject.address = req.query.address;
+          if (web3bio.platform === "lens" && web3bio.identity)
+            saveableObject.lens = web3bio.identity;
           if (web3bio.platform === "ENS" && web3bio.identity)
             saveableObject.ens = web3bio.identity;
           if (web3bio.location)
             saveableObject.location = web3bio.location;
-          if (web3bio.links && web3bio.links.discord && web3bio.links.discord.link)
+          if (web3bio.links && web3bio.links.discord)
             saveableObject.discord = web3bio.links.discord;
-          if (web3bio.links && web3bio.links.lenster && web3bio.links.lenster.link)
+          if (web3bio.links && web3bio.links.lenster)
             saveableObject.lenster = web3bio.links.lenster;
-          if (web3bio.links && web3bio.links.twitter && web3bio.links.twitter.link)
+          if (web3bio.links && web3bio.links.twitter)
             saveableObject.twitter = web3bio.links.twitter;
-          if (web3bio.links && web3bio.links.telegram && web3bio.links.telegram.link)
+          if (web3bio.links && web3bio.links.telegram)
             saveableObject.telegram = web3bio.links.telegram;
-          if (web3bio.links && web3bio.links.github && web3bio.links.github.link)
+          if (web3bio.links && web3bio.links.github)
             saveableObject.github = web3bio.links.github;
 
           const finalUser = await TruthWallet.create({ ...saveableObject });
