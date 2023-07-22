@@ -6,14 +6,16 @@ import Story from '../components/Story'
 import Web3 from 'web3';
 import { init, useLazyQuery } from "@airstack/airstack-react";
 const Parser = require("rss-parser");
+import { fetchQuicknodeData } from "../api/api";
 
+let airstackVariables = {owner:null};
 
 export default function Home() {
   init('ee48db4ca302405691ee47714ed144f3'); 
 
-  const airstackQuery= `query PoapsAndEventsForWallet($owner: Identity) {
-    Poaps(input: {filter: {owner: {_eq: $owner}}, blockchain: ALL}) {
-      Poap {
+  const airstackQuery = `query walletDataQuery($owner: Identity!) {
+    Wallet(input: {identity: $owner, blockchain: ethereum}) {
+      poaps {
         id
         chainId
         blockchain
@@ -34,14 +36,9 @@ export default function Home() {
           dappSlug
           dappVersion
           eventId
-          metadata
           contentType
           contentValue {
             image {
-              extraSmall
-              small
-              medium
-              large
               original
             }
           }
@@ -53,6 +50,27 @@ export default function Home() {
           endDate
           isVirtualEvent
           eventURL
+        }
+      }
+      tokenBalances {
+        tokenNfts {
+          id
+          address
+          tokenId
+          blockchain
+          chainId
+          type
+          totalSupply
+          tokenURI
+          contentType
+          contentValue {
+            image {
+              original
+            }
+          }
+          lastTransferHash
+          lastTransferBlock
+          lastTransferTimestamp
         }
       }
     }
@@ -76,10 +94,10 @@ export default function Home() {
 
   const [loadData, setLoadData] = useState(false);
 
-  let variables = {owner:null};
-
-  const [airstackfetch, { data, loading, error }] = useLazyQuery(airstackQuery, variables);
   
+  const [airstackfetch, { data, loading, error }] = useLazyQuery(airstackQuery, airstackVariables);
+  console.log(airstackVariables)
+
   async function connect() {
     if (typeof window !== 'undefined' && typeof window.ethereum !== 'undefined') {
       await window.ethereum.request({ method: "eth_requestAccounts" });
@@ -89,8 +107,14 @@ export default function Home() {
       const accounts = await web3Instance.eth.getAccounts();
       if (accounts.length > 0) {
         console.log("Connected wallet address: ", accounts[0]);
-        variables.owner = accounts[0]
+        airstackVariables.owner = accounts[0]
+        //airstackVariables.owner = "0x0B64179958f7e98C49316119852128130De23dD7"
+        //console.log(airstackVariables)
         airstackfetch();
+
+        if(data) {
+          //console.log(fetchQuicknodeData(data))
+        }
         console.log(data)
       }
     } else {
