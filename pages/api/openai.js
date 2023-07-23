@@ -27,7 +27,7 @@ export default async function handler(req, res) {
       {
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer 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`,
+          'Authorization': `Bearer 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`,
         },
       }
     );
@@ -36,7 +36,7 @@ export default async function handler(req, res) {
 
     //const tags = response.data.choices[0]; 
     let tags = response.data.choices[0].message.content;
-    return res.status(200).json({tags});
+    return res.status(200).json({ tags });
 
   } catch (error) {
     return res.status(500).json({ error: error.message });

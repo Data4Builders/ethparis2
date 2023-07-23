@@ -1,9 +1,10 @@
+"use client";
 import { init, useQuery } from "@airstack/airstack-react";
 
-init('ee48db4ca302405691ee47714ed144f3'); 
+init('ee48db4ca302405691ee47714ed144f3');
 
 const query = `query CombinedQuery {
-  Poaps(input: {filter: {owner: {_eq: "0x0B64179958f7e98C49316119852128130De23dD7"}}, blockchain: ALL}) {
+  Poaps(input: {filter: {owner: {_eq: "0xe515c44a91154b6f44cc0ed6c850d6ec21d31658"}}, blockchain: ALL}) {
     Poap {
       id
       chainId
@@ -22,7 +23,7 @@ const query = `query CombinedQuery {
         chainId
         blockchain
         dappName
-        dappSlug
+        dappSlug  
         dappVersion
         eventId
         metadata

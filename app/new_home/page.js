@@ -114,6 +114,6 @@ export default function Home() {
       <div className="story-components-wrapper mt-10">
         {stories && stories.length > 0 ? stories.map((story, i) => <Story key={i} story={story} />) : <div>Loading...</div>}
       </div>
-    </div >
+    </div>
   )
 }

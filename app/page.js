@@ -102,7 +102,6 @@ export default function Home() {
 
 
   const [airstackfetch, { data, loading, error }] = useLazyQuery(airstackQuery, airstackVariables);
-  console.log(error)
 
   async function getNftData(data) {
     return fetchQuicknodeData(data)

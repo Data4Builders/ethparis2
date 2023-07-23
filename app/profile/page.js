@@ -4,6 +4,8 @@ import { IoTrashSharp } from "react-icons/io5";
 import { useAccount } from 'wagmi'
 const Parser = require("rss-parser");
 
+const tagColors = ['tag-red', 'tag-orange', 'tag-green', 'tag-yellow', 'tag-blue', 'tag-purple'];
+
 export default function Home() {
 
   const { address, isConnected } = useAccount()
@@ -16,22 +18,17 @@ export default function Home() {
     twitter: ['loading...'],
   });
 
+  console.log({ accounts })
+
   const [tags, setTags] = useState([]);
-  //   name: "USDD",
-  //   color: "red"
-  // }, {
-  //   name: "Huboi",
-  //   color: "blue"
-  // }, {
-  //   name: "Paris",
-  //   color: "green"
-  // }, {
-  //   name: "Soccer",
-  //   color: "purple"
-  // }, {
-  //   name: "Human",
-  //   color: "orange"
-  // }]);
+
+  const generateTags = () => {
+    fetch(`/api/generate-tags?address=${address}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data) window.location.reload(false);
+      })
+  }
 
   useEffect(() => {
     if (address) {
@@ -172,9 +169,10 @@ export default function Home() {
           </div>
           <div className="tags-container flex flex-wrap">
             {
-              tags.map((t, i) => <div key={i} className={`tag-${t.color} mr-2 mt-2 px-2 font-semibold`}>{t.name}</div>)
+              accounts.tags && accounts.tags.map((t, i) => <div key={i} className={`${tagColors[Math.floor(Math.random() * tagColors.length)]} mr-2 mt-2 px-2 font-semibold`}>{t}</div>)
             }
           </div>
+          <div onClick={generateTags} className=' text-white border-2 border-white px-7 py-2 hover:bg-neutral-300 w-min mt-3'>{accounts.tags ? 'Regenerate' : 'Generate'}</div>
         </div>
       </div>
     </div>

@@ -49,6 +49,11 @@ const TruthWallet = new mongoose.Schema({
       type: String
     }
   ],
+  tags: [
+    {
+      type: String
+    }
+  ],
   location:
   {
     type: String
