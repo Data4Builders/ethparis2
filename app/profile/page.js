@@ -206,7 +206,7 @@ export default function Home() {
               </div>
             </section>
 
-            <a href="/new_home">
+            <a href="/">
               <div className='bg-white text-black px-7 py-2 hover:bg-neutral-300 w-auto h-min mt-10'>Back to Feed</div>
             </a>
           </div>
