@@ -34,7 +34,7 @@ export default function Story({ story }) {
           <div className="display-font text-4xl">{story.title}</div>
           <div className="pb-4 pt-2">{story.contentSnippet}</div>
           <div className="flex">
-            {story.tags?.map((tag, index) => (
+            Article Tags: &nbsp;{story.tags?.map((tag, index) => (
               <div key={index} className={`${tagColors[index]} px-2 mr-5`}>{tag}</div>
             ))}
           </div>

@@ -57,6 +57,10 @@ const TruthWallet = new mongoose.Schema({
   location:
   {
     type: String
+  },
+  sismo:
+  {
+    type: String
   }
 })
 
