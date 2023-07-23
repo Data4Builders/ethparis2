@@ -5,7 +5,9 @@ const Parser = require("rss-parser");
 import { useWeb3Modal } from "@web3modal/react"
 import { useAccount, useConnect, useDisconnect } from 'wagmi'
 import { IoPersonCircle } from "react-icons/io5";
-import Link from 'next/link';
+
+const tagColors = ['tag-purple', 'tag-red', 'tag-orange', 'tag-yellow', 'tag-green', 'tag-blue', 'tag-purple', 'tag-red', 'tag-orange', 'tag-yellow', 'tag-green', 'tag-blue'];
+
 
 const feedUrls = [
   "https://rss.app/feeds/EsnHA9U6TsdCtbfa.xml", //cointelegraph Bitcoin
@@ -25,6 +27,9 @@ export default function Home() {
   const { disconnect } = useDisconnect()
   const { address, isConnected } = useAccount()
   const { connect, connectors, error, isLoading, onSuccess } = useConnect()
+  const [stories, setStories] = useState([]);
+  const [isClient, setIsClient] = useState(false);
+  const [accounts, setAccounts] = useState({});
 
   const usePrevious = (value) => {
     const ref = useRef();
@@ -33,11 +38,18 @@ export default function Home() {
     });
     return ref.current;
   }
-
-
   const prevAddress = usePrevious(address);
-  const [stories, setStories] = useState([]);
-  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    if (address) {
+      fetch('/api/' + address)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data && data[0])
+            setAccounts(data[0]);
+        })
+    }
+  }, [address])
 
   useEffect(() => {
     setIsClient(true)
@@ -72,16 +84,79 @@ export default function Home() {
   }
 
   useEffect(() => {
-    Promise.all(feedUrls.map((url) => getRSSFeed(url))).then((feeds) => {
+    if (!accounts.tags) return;
+    (async () => {
+      const feeds = await Promise.all(feedUrls.map((url) => new Promise(async (resolve) => resolve(await getRSSFeed(url)))))
       const items = feeds.flatMap((feed) => feed.items);
 
       // Sort items by pubDate in descending order
-      const sortedItems = items.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+      const sortedItems = items.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate)).slice(0, 10);
 
-      console.log(sortedItems)
-      setStories(sortedItems)
-    });
-  }, [])
+
+      const storyPromises = [];
+
+      for (const story of sortedItems) {
+        const promiseFunc = new Promise(async (resolve, reject) => {
+          const tags = accounts.tags;
+          const response = await fetch('/api/articleselector', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ tags: tags, title: story.title }),
+          });
+
+
+          if (response.ok) {
+            let shouldAddStory = await response.json();
+            shouldAddStory = shouldAddStory.tags
+
+            if (shouldAddStory !== 'false') {
+
+              //add tag logic to specific story before we add it to the array
+              let relevantTags = [];
+
+              await Promise.all(tags.map(async (tag, i) => {
+                // Breaks the loop when we have 3 relevant tags.
+
+                const storyTagResponse = await fetch('/api/story-tagger', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({ tag: tag, title: story.title }),
+                });
+
+                let responseText = await storyTagResponse.json();
+                responseText = responseText.tags
+
+                // Assuming a relevant tag is determined by non-empty response text.
+                if (responseText.toLowerCase() !== 'false' && relevantTags.length < 3) {
+                  relevantTags.push(responseText);
+                  resolve();
+                }
+                reject();
+              })).catch((e) => console.error(e));
+
+              if (relevantTags.length > 0) {
+                story.tags = relevantTags;
+                setStories((prevStories) => [...prevStories, story]);  // Update the state immediately
+                resolve(story);
+              } else {
+                reject();
+              }
+            }
+          } else {
+            console.error('API response was not ok for story', story);
+          }
+        });
+
+        storyPromises.push(promiseFunc);
+      }
+
+      const x = await Promise.all(storyPromises);
+    })();
+  }, [accounts.tags])
 
   if (!isClient) {
     return <div className="w-full h-screen flex justify-center align-center m-5">Loading...</div>
@@ -93,9 +168,9 @@ export default function Home() {
         {
           isConnected && !isLoading ? (
             <div className="flex w-full justify-end items-center relative">
-              <a href="/profile" className="hover:opacity-50">
+              <a href="/profile" className="">
                 <div className="flex flex-col items-center justify-center absolute m-auto left-0 right-0 w-min top-0">
-                  <IoPersonCircle className="text-5xl" />
+                  <IoPersonCircle className="text-5xl hover:opacity-50" />
                   <span className="text-xs">{address.substring(0, 8)}..</span>
                 </div>
               </a>
@@ -111,6 +186,17 @@ export default function Home() {
           )
         }
       </div >
+      <br />
+
+      <div className="tags-container w-full flex truncate justify-center items-center">
+        {/* <span className="text-xs pt-2 pr-3">
+          Generated Tags:
+        </span> */}
+        {
+          accounts.tags && accounts.tags.map((t, i) => <div key={i} className={`${tagColors[i]}  mr-2 mt-2 px-2 font-semibold`}>{t}</div>)
+        }
+      </div>
+      <br />
       <div className="story-components-wrapper mt-10">
         {stories && stories.length > 0 ? stories.map((story, i) => <Story key={i} story={story} />) : <div>Loading...</div>}
       </div>

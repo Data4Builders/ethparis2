@@ -231,7 +231,7 @@ export default function Home() {
 
       const filterStories = async () => {
         for (const story of sortedItems) {
-          if (storycounter >= 10) { // important line of code! number of relevant articles that are loaded
+          if (stories.length >= 10) { // important line of code! number of relevant articles that are loaded
             break;
           }
           const response = await fetch('/api/articleselector', {
@@ -280,7 +280,7 @@ export default function Home() {
                 story.tags = relevantTags;
 
                 setStories((prevStories) => [...prevStories, story]);  // Update the state immediately
-                storycounter += 1;
+                storycounter += 1
               }
             }
           } else {

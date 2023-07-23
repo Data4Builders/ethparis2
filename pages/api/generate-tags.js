@@ -144,7 +144,7 @@ module.exports = async (req, res) => {
       }, {
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer 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`,
+        'Authorization': `Bearer ${process.env.OPENAIKEY}`,
       },
     }
     );

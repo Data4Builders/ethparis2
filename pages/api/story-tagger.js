@@ -19,7 +19,7 @@ export default async function handler(req, res) {
         messages: [
           {
             role: "system",
-            content: "If the tag '" + tagText + "' is extremely relevant to the news story " + title + " reply with '" + tagText + "' else reply 'false'"
+            content: "If the tag '" + tagText + "' is extremely relevant to the news story " + title + " reply with '" + tagText + "' only, else reply 'false'"
           }
         ],
         max_tokens: 30,
@@ -27,7 +27,7 @@ export default async function handler(req, res) {
       {
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer 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`,
+          'Authorization': `Bearer ${process.env.OPENAIKEY}`,
         },
       }
     );
@@ -36,7 +36,7 @@ export default async function handler(req, res) {
 
     //const tags = response.data.choices[0]; 
     let tags = response.data.choices[0].message.content;
-    return res.status(200).json({tags});
+    return res.status(200).json({ tags });
 
   } catch (error) {
     return res.status(500).json({ error: error.message });
