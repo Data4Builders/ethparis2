@@ -17,7 +17,7 @@ export default async function handler(req, res) {
         messages: [
           {
             role: "system",
-            content: "Reply 'true' if you're 100% sure someone with these interests: "+tagText+", would like an article called:" + title
+            content: "Reply 'true' if you're 100% sure someone with these interests: " + tagText + ", would like an article called:" + title
           }
         ],
         max_tokens: 10,
@@ -34,7 +34,7 @@ export default async function handler(req, res) {
 
     //const tags = response.data.choices[0]; 
     let tags = response.data.choices[0].message.content;
-    return res.status(200).json({tags});
+    return res.status(200).json({ tags });
 
   } catch (error) {
     return res.status(500).json({ error: error.message });

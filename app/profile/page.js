@@ -89,7 +89,7 @@ export default function Home() {
                       appId: "0xa860f5fd71c5cf5707d371f589083d5a",
                     }}
                     auths={[{ authType: AuthType.GITHUB }]}
-                    callbackUrl={`http://localhost:3000/api/sismo-callback?address=${address}`}
+                    callbackUrl={`http://localhost:3000/api/sismo-callback`}
                     signature={{ message: "Connect to Data4Builders" }}
                   />
                 )}
@@ -206,7 +206,7 @@ export default function Home() {
               </div>
             </section>
 
-            <a href="/new_home">
+            <a href="/">
               <div className='bg-white text-black px-7 py-2 hover:bg-neutral-300 w-auto h-min mt-10'>Back to Feed</div>
             </a>
           </div>
