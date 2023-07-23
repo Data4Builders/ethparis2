@@ -93,7 +93,7 @@ export default function Home() {
       const items = feeds.flatMap((feed) => feed.items);
 
       // Sort items by pubDate in descending order
-      const sortedItems = items.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate)).slice(0, 5);
+      const sortedItems = items.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate)).slice(0, 10);
 
 
       const storyPromises = [];
@@ -121,7 +121,7 @@ export default function Home() {
               //add tag logic to specific story before we add it to the array
               let relevantTags = [];
 
-              await Promise.all(tags.slice(0, 3).map(async (tag, ind) => {
+              await Promise.all(tags.slice(0, 5).map(async (tag, ind) => {
                 // Breaks the loop when we have 3 relevant tags.
                 await timeout(1000 * ind);
                 const storyTagResponse = await fetch('/api/story-tagger', {
