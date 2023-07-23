@@ -2,12 +2,15 @@
 import { useState, useEffect } from 'react';
 import { IoTrashSharp } from "react-icons/io5";
 import { useAccount } from 'wagmi'
-import {
+
+const {
   SismoConnectButton,
   AuthType,
   SismoConnectResponse,
   ClaimType,
-} from "@sismo-core/sismo-connect-react";
+} = require("@sismo-core/sismo-connect-react");
+
+
 const Parser = require("rss-parser");
 
 export default function Home() {
